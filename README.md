@@ -109,3 +109,6 @@ The following test accounts are available for evaluation:
 | test@example.com | Testuser@123456 |
 | test2@example.com | TestUser@123456 |
 
+## Live Link
+[Live Link](https://task-tracker-ai-app.vercel.app/)
+
