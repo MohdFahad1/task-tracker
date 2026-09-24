@@ -18,7 +18,11 @@ import { Label } from "@/components/ui/label";
 
 export default function CreateTask({ onTaskCreated }) {
   const [open, setOpen] = useState(false);
+
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const [prompt, setPrompt] = useState("");
 
   const [form, setForm] = useState({
     title: "",
@@ -32,6 +36,31 @@ export default function CreateTask({ onTaskCreated }) {
       ...prev,
       [name]: value,
     }));
+  }
+
+  async function handleGenerateAI() {
+    if (!prompt.trim()) {
+      return;
+    }
+
+    try {
+      setAiLoading(true);
+
+      const { data } = await axios.post("/api/tasks/generate", {
+        prompt,
+      });
+
+      if (data.success) {
+        setForm({
+          title: data.task.title,
+          description: data.task.description,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to generate task with AI:", error);
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   async function handleSubmit(event) {
@@ -56,6 +85,7 @@ export default function CreateTask({ onTaskCreated }) {
           description: "",
         });
 
+        setPrompt("");
         setOpen(false);
 
         onTaskCreated?.(data.task);
@@ -67,9 +97,21 @@ export default function CreateTask({ onTaskCreated }) {
     }
   }
 
+  function handleDialogChange(value) {
+    setOpen(value);
+
+    if (!value) {
+      setPrompt("");
+      setForm({
+        title: "",
+        description: "",
+      });
+    }
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="cursor-pointer"/>}>
+    <Dialog open={open} onOpenChange={handleDialogChange}>
+      <DialogTrigger render={<Button className="cursor-pointer" />}>
         Create Task
       </DialogTrigger>
 
@@ -79,6 +121,31 @@ export default function CreateTask({ onTaskCreated }) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* AI Task Generation */}
+          <div className="space-y-2">
+            <Label htmlFor="ai-prompt">
+              Describe your task
+            </Label>
+
+            <Textarea
+              id="ai-prompt"
+              placeholder="e.g. I need to finish the login page and test it before tomorrow"
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+              maxLength={1000}
+            />
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full cursor-pointer"
+              onClick={handleGenerateAI}
+              disabled={aiLoading || !prompt.trim()}
+            >
+              {aiLoading ? "Generating..." : "✨ Generate with AI"}
+            </Button>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
 
@@ -94,7 +161,9 @@ export default function CreateTask({ onTaskCreated }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">
+              Description
+            </Label>
 
             <Textarea
               id="description"
@@ -108,7 +177,7 @@ export default function CreateTask({ onTaskCreated }) {
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full cursor-pointer"
             disabled={loading}
           >
             {loading ? "Creating..." : "Create Task"}
