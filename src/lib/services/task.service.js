@@ -1,4 +1,5 @@
 import Task from "../../models/Task";
+import TimeLog from "../../models/TimeLog";
 
 export async function createTask(userId, data) {
   const task = await Task.create({
@@ -39,8 +40,19 @@ export async function updateTask(userId, taskId, data) {
 }
 
 export async function deleteTask(userId, taskId) {
-  return Task.findOneAndDelete({
+  const task = await Task.findOneAndDelete({
     _id: taskId,
     userId,
   });
+
+  if (!task) {
+    return null;
+  }
+
+  await TimeLog.deleteMany({
+    userId,
+    taskId,
+  });
+
+  return task;
 }
