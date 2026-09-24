@@ -16,6 +16,8 @@ import TaskActions from "./TaskActions";
 import TaskTimer from "./TaskTimer";
 import TimeLogHistory from "./TimeLogHistory";
 
+import { Loader2 } from "lucide-react";
+
 function getStatusBadgeClass(status) {
   switch (status) {
     case "pending":
