@@ -76,7 +76,8 @@ export default function TaskList({
 
   if (loading) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-muted-foreground flex items-center gap-2">
+  <Loader2 className="h-4 w-4 animate-spin" />
         Loading tasks...
       </p>
     );

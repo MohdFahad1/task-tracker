@@ -34,6 +34,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
+import { Loader2 } from "lucide-react";
+
 export default function TaskActions({ task, onUpdated, onDeleted }) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -195,15 +197,16 @@ export default function TaskActions({ task, onUpdated, onDeleted }) {
               disabled={loading}
               className="bg-destructive/80 text-white hover:bg-destructive/70"
             >
-              {loading ? "Deleting..." : "Delete"}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Delete"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* =========================
-          EDIT TASK DIALOG
-      ========================== */}
       <Dialog
         open={editOpen}
         onOpenChange={setEditOpen}
@@ -219,7 +222,6 @@ export default function TaskActions({ task, onUpdated, onDeleted }) {
             onSubmit={handleEdit}
             className="space-y-5"
           >
-            {/* Title */}
             <div className="space-y-2">
               <Label htmlFor={`title-${task._id}`}>
                 Title
@@ -239,7 +241,6 @@ export default function TaskActions({ task, onUpdated, onDeleted }) {
               />
             </div>
 
-            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor={`description-${task._id}`}>
                 Description
@@ -259,13 +260,16 @@ export default function TaskActions({ task, onUpdated, onDeleted }) {
               />
             </div>
 
-            {/* Save */}
             <Button
               type="submit"
               className="w-full"
               disabled={loading}
             >
-              {loading ? "Saving..." : "Save Changes"}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </form>
         </DialogContent>

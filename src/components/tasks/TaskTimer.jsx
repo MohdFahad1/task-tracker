@@ -5,6 +5,8 @@ import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 
+import { Loader2 } from "lucide-react";
+
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -169,7 +171,11 @@ export default function TaskTimer({
             onClick={handleStop}
             disabled={loading}
           >
-            {loading ? "Stopping..." : "Stop"}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Stop"
+            )}
           </Button>
         </>
       )}
@@ -187,7 +193,11 @@ export default function TaskTimer({
           onClick={handleStart}
           disabled={loading}
         >
-          {loading ? "Starting..." : "Start"}
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            "Start"
+          )}
         </Button>
       )}
     </div>

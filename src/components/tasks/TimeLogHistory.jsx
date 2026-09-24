@@ -101,7 +101,9 @@ export default function TimeLogHistory({ taskId }) {
         </DialogHeader>
 
         {loading ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">
+          <p className="py-6 text-center text-sm text-muted-foreground flex items-center gap-2">
+
+  <Loader2 className="h-4 w-4 animate-spin" />
             Loading time logs...
           </p>
         ) : timeLogs.length === 0 ? (

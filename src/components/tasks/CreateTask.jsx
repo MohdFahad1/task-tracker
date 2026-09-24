@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 
 export default function CreateTask({ onTaskCreated }) {
   const [open, setOpen] = useState(false);
@@ -121,7 +122,6 @@ export default function CreateTask({ onTaskCreated }) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* AI Task Generation */}
           <div className="space-y-2">
             <Label htmlFor="ai-prompt">
               Describe your task
@@ -142,7 +142,11 @@ export default function CreateTask({ onTaskCreated }) {
               onClick={handleGenerateAI}
               disabled={aiLoading || !prompt.trim()}
             >
-              {aiLoading ? "Generating..." : "✨ Generate with AI"}
+              {aiLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "✨ Generate with AI"
+              )}
             </Button>
           </div>
 
@@ -178,9 +182,13 @@ export default function CreateTask({ onTaskCreated }) {
           <Button
             type="submit"
             className="w-full cursor-pointer"
-            disabled={loading}
+            disabled={loading || aiLoading}
           >
-            {loading ? "Creating..." : "Create Task"}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Create Task"
+            )}
           </Button>
         </form>
       </DialogContent>
