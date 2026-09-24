@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+
 import { Button } from "@/components/ui/button";
 
 function formatTime(seconds) {
@@ -22,6 +23,7 @@ export default function TaskTimer({
   onTimerChange,
 }) {
   const [elapsed, setElapsed] = useState(0);
+  const [totalTime, setTotalTime] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const activeTaskId = activeTimer
@@ -35,6 +37,32 @@ export default function TaskTimer({
 
   const isAnotherTaskActive =
     activeTimer && !isThisTaskActive;
+
+  async function fetchTotalTime() {
+    try {
+      const { data } = await axios.get(
+        `/api/time/${taskId}`
+      );
+
+      if (data.success && data.timeLogs) {
+        const total = data.timeLogs.reduce(
+          (sum, log) => sum + (log.duration || 0),
+          0
+        );
+
+        setTotalTime(total);
+      }
+    } catch (error) {
+      console.error(
+        "Failed to fetch task time logs:",
+        error
+      );
+    }
+  }
+
+  useEffect(() => {
+    fetchTotalTime();
+  }, [taskId]);
 
   useEffect(() => {
     if (!activeTimer) {
@@ -108,6 +136,7 @@ export default function TaskTimer({
       );
 
       if (data.success) {
+        await fetchTotalTime();
         onTimerChange();
       }
     } catch (error) {
@@ -122,6 +151,12 @@ export default function TaskTimer({
 
   return (
     <div className="flex items-center gap-3">
+      {totalTime > 0 && (
+        <span className="text-xs text-muted-foreground">
+          Total: {formatTime(totalTime)}
+        </span>
+      )}
+
       {isThisTaskActive && (
         <>
           <span className="min-w-[80px] text-sm font-mono font-medium">

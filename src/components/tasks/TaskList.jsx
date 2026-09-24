@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 
 import TaskActions from "./TaskActions";
 import TaskTimer from "./TaskTimer";
+import TimeLogHistory from "./TimeLogHistory";
 
 function getStatusBadgeClass(status) {
   switch (status) {
@@ -46,6 +47,7 @@ export default function TaskList({
   loading,
   onUpdated,
   onDeleted,
+  onTimerChange,
 }) {
   const [activeTimer, setActiveTimer] = useState(null);
 
@@ -96,44 +98,59 @@ export default function TaskList({
     <div className="grid gap-4">
       {tasks.map((task) => (
         <Card key={task._id}>
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
-            <div className="min-w-0">
-              <CardTitle className="text-base">
-                {task.title}
-              </CardTitle>
-            </div>
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 space-y-1">
+                <CardTitle className="text-base">
+                  {task.title}
+                </CardTitle>
 
-            <div className="flex items-center gap-3">
-              <TaskTimer
-                taskId={task._id}
-                activeTimer={activeTimer}
-                onTimerChange={fetchActiveTimer}
-              />
-
-              <Badge
-                variant="outline"
-                className={getStatusBadgeClass(
-                  task.status
+                {task.description && (
+                  <p className="text-sm text-muted-foreground">
+                    {task.description}
+                  </p>
                 )}
-              >
-                {formatStatus(task.status)}
-              </Badge>
+              </div>
 
-              <TaskActions
-                task={task}
-                onUpdated={onUpdated}
-                onDeleted={onDeleted}
-              />
+              <div className="flex shrink-0 items-center gap-2">
+                <Badge
+                  variant="outline"
+                  className={getStatusBadgeClass(
+                    task.status
+                  )}
+                >
+                  {formatStatus(task.status)}
+                </Badge>
+
+                <TaskActions
+                  task={task}
+                  onUpdated={onUpdated}
+                  onDeleted={onDeleted}
+                />
+              </div>
             </div>
           </CardHeader>
 
-          {task.description && (
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {task.description}
-              </p>
-            </CardContent>
-          )}
+          <CardContent className="pt-0">
+            <div className="flex items-center justify-between border-t pt-3">
+              <div className="flex items-center gap-3">
+                <p className="text-sm text-muted-foreground">
+                  Time tracked
+                </p>
+
+                <TimeLogHistory taskId={task._id} />
+              </div>
+
+              <TaskTimer
+                taskId={task._id}
+                activeTimer={activeTimer}
+                onTimerChange={async () => {
+                  await fetchActiveTimer();
+                  onTimerChange?.();
+                }}
+              />
+            </div>
+          </CardContent>
         </Card>
       ))}
     </div>
